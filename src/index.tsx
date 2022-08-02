@@ -1,6 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import MapsApp from "./MapsApp";
+import mapboxgl from "mapbox-gl";
+
+mapboxgl.accessToken = process.env.REACT_APP_MAP_BOX_TOKEN!;
 
 if (!navigator.geolocation) {
   alert("Tu navegador no soporta la Geolocalización");
