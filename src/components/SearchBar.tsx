@@ -1,6 +1,7 @@
 import { ChangeEvent, useContext, useRef } from "react";
 import { PlacesContext } from "../contexts";
 import "../styles.css";
+import { SearchResults } from "./SearchResults";
 
 function SearchBar() {
   const { searchPlacesByTerm } = useContext(PlacesContext);
@@ -18,13 +19,16 @@ function SearchBar() {
   };
 
   return (
-    <div className="search-container">
+    <div className="search-container ">
       <input
         type="text"
         className="form-control"
         placeholder="Buscar lugar..."
         onChange={onQueryChange}
       />
+      <div className="overflow-auto">
+        <SearchResults />
+      </div>
     </div>
   );
 }
