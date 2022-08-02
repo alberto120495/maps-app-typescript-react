@@ -9,6 +9,7 @@ function MapView() {
   const { setMapaD } = useStateMapContext();
 
   const mapDiv = useRef<HTMLDivElement>(null);
+
   useLayoutEffect(() => {
     if (!isLoading) {
       const map = new Map({
@@ -17,7 +18,6 @@ function MapView() {
         center: userLocation, // starting position [lng, lat]
         zoom: 14, // starting zoom
       });
-
       setMapaD?.(map);
     }
   }, [isLoading]);

@@ -34,6 +34,7 @@ function MapProvider({ children }: Props) {
       .setLngLat(payload.getCenter())
       .setPopup(myLocationPopup)
       .addTo(payload);
+
     setMapa({
       ...mapa,
       isMapReady: true,

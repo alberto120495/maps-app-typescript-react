@@ -1,7 +1,9 @@
-import { ChangeEvent, useRef } from "react";
+import { ChangeEvent, useContext, useRef } from "react";
+import { PlacesContext } from "../contexts";
 import "../styles.css";
 
 function SearchBar() {
+  const { searchPlacesByTerm } = useContext(PlacesContext);
   const debounceRef = useRef<NodeJS.Timeout>();
 
   const onQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -11,16 +13,16 @@ function SearchBar() {
 
     debounceRef.current = setTimeout(() => {
       //TODO: search for places
-      console.log(event.target.value);
+      searchPlacesByTerm(event.target.value);
     }, 500);
   };
 
   return (
     <div className="search-container">
-      <input
+      <inputñ
         type="text"
         className="form-control"
-        placeholder="Buscar Lugar"
+        placeholder="Buscar lugar..."
         onChange={onQueryChange}
       />
     </div>
