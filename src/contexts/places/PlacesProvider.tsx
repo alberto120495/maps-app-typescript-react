@@ -3,15 +3,20 @@ import { getUserLocation } from "../../helpers";
 import { PlacesContext } from "./PlacesContext";
 import placesReducer from "./placesReducer";
 import { searchApi } from "../../apis";
+import { PlacesResponse, Feature } from "../../interfaces/places";
 
 export interface PlacesState {
   isLoading: boolean;
   userLocation?: [number, number];
+  isLoadingPlaces: boolean;
+  places: Feature[];
 }
 
 const INITIAL_STATE: PlacesState = {
   isLoading: false,
   userLocation: undefined,
+  isLoadingPlaces: false,
+  places: [],
 };
 
 interface Props {
@@ -30,18 +35,19 @@ export const PlacesProvider = ({ children }: Props) => {
     );
   }, []);
 
-  const searchPlacesByTerm = async (query: string) => {
+  const searchPlacesByTerm = async (query: string): Promise<Feature[]> => {
     if (query.length === 0) return [];
     if (!state.userLocation) throw new Error("No hay ubicacion del usuario");
+    dispatch({ type: "SET_LOADING_PLACES" });
 
-    const resp = await searchApi.get(`/${query}.json`, {
+    const resp = await searchApi.get<PlacesResponse>(`/${query}.json`, {
       params: {
         proximity: state.userLocation.join(","),
       },
     });
 
-    console.log(resp.data);
-    return resp.data;
+    dispatch({ type: "SET_PLACES", payload: resp.data.features });
+    return resp.data.features;
   };
 
   return (

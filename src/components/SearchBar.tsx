@@ -19,7 +19,7 @@ function SearchBar() {
 
   return (
     <div className="search-container">
-      <inputñ
+      <input
         type="text"
         className="form-control"
         placeholder="Buscar lugar..."
