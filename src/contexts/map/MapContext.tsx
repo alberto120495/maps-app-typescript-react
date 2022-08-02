@@ -4,6 +4,9 @@ import { createContext, useContext, useState } from "react";
 interface MapContextProps {
   isMapReady: boolean;
   map?: Map;
+
+  //Methods
+  setMapaD?: (payload: Map) => void;
 }
 
 const initialState: MapContextProps = {
@@ -17,14 +20,23 @@ interface Props {
 
 const MapContext = createContext<MapContextProps>({} as MapContextProps);
 
-const useStateContext = () => useContext(MapContext);
+const useStateMapContext = () => useContext(MapContext);
 
 function MapProvider({ children }: Props) {
-  const [data, setData] = useState(initialState);
+  const [mapa, setMapa] = useState(initialState);
+
+  const setMapaD = (payload: Map) => {
+    setMapa({
+      ...mapa,
+      isMapReady: true,
+      map: payload,
+    });
+  };
   return (
     <MapContext.Provider
       value={{
-        ...data,
+        ...mapa,
+        setMapaD,
       }}
     >
       {children}
@@ -32,4 +44,4 @@ function MapProvider({ children }: Props) {
   );
 }
 
-export { MapProvider, useStateContext };
+export { MapProvider, useStateMapContext };
