@@ -1,4 +1,4 @@
-import { Map } from "mapbox-gl";
+import { Map, Marker, Popup } from "mapbox-gl";
 import { createContext, useContext, useState } from "react";
 
 interface MapContextProps {
@@ -26,6 +26,14 @@ function MapProvider({ children }: Props) {
   const [mapa, setMapa] = useState(initialState);
 
   const setMapaD = (payload: Map) => {
+    const myLocationPopup = new Popup().setHTML(
+      "<h4>You are here</h4> <p>En algun lugar del mundo</p>"
+    );
+
+    new Marker({ color: "#61DAFB" })
+      .setLngLat(payload.getCenter())
+      .setPopup(myLocationPopup)
+      .addTo(payload);
     setMapa({
       ...mapa,
       isMapReady: true,
