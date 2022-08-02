@@ -1,11 +1,12 @@
-import React from "react";
-import { PlacesProvider } from "./contexts";
+import { MapProvider, PlacesProvider } from "./contexts";
 import { HomePage } from "./pages";
 
 function MapsApp() {
   return (
     <PlacesProvider>
-      <HomePage />
+      <MapProvider>
+        <HomePage />
+      </MapProvider>
     </PlacesProvider>
   );
 }
