@@ -1,9 +1,11 @@
 import { Map, Marker, Popup } from "mapbox-gl";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { PlacesContext } from "../places/PlacesContext";
 
 interface MapContextProps {
   isMapReady: boolean;
   map?: Map;
+  markers: Marker[];
 
   //Methods
   setMapaD?: (payload: Map) => void;
@@ -12,6 +14,7 @@ interface MapContextProps {
 const initialState: MapContextProps = {
   isMapReady: false,
   map: undefined,
+  markers: [],
 };
 
 interface Props {
@@ -24,6 +27,31 @@ const useStateMapContext = () => useContext(MapContext);
 
 function MapProvider({ children }: Props) {
   const [mapa, setMapa] = useState(initialState);
+
+  const { places } = useContext(PlacesContext);
+
+  useEffect(() => {
+    mapa.markers.forEach((marker) => marker.remove());
+    const newMarkers: Marker[] = [];
+    for (const place of places) {
+      const [lng, lat] = place.center;
+      const popup = new Popup().setHTML(
+        `
+        <h6>${place.text}</h6>
+        <p>${place.place_name}</p>
+        `
+      );
+      const newMarker = new Marker({ color: "#61DAFB" })
+        .setPopup(popup)
+        .setLngLat([lng, lat])
+        .addTo(mapa.map!);
+      newMarkers.push(newMarker);
+    }
+
+    //todo:limpiar polylines
+
+    setMarkers(newMarkers);
+  }, [places]);
 
   const setMapaD = (payload: Map) => {
     const myLocationPopup = new Popup().setHTML(
@@ -41,6 +69,14 @@ function MapProvider({ children }: Props) {
       map: payload,
     });
   };
+
+  function setMarkers(markers: Marker[]) {
+    setMapa({
+      ...mapa,
+      markers: markers,
+    });
+  }
+
   return (
     <MapContext.Provider
       value={{
