@@ -1,5 +1,7 @@
 import { Map, Marker, Popup } from "mapbox-gl";
 import { createContext, useContext, useEffect, useState } from "react";
+import { directionsApi } from "../../apis";
+import { DirectionsResponse } from "../../interfaces/direactions";
 import { PlacesContext } from "../places/PlacesContext";
 
 interface MapContextProps {
@@ -9,6 +11,10 @@ interface MapContextProps {
 
   //Methods
   setMapaD?: (payload: Map) => void;
+  getRouteBetweenPoints?: (
+    start: [number, number],
+    end: [number, number]
+  ) => Promise<void>;
 }
 
 const initialState: MapContextProps = {
@@ -53,21 +59,37 @@ function MapProvider({ children }: Props) {
     setMarkers(newMarkers);
   }, [places]);
 
-  const setMapaD = (payload: Map) => {
+  const setMapaD = (map: Map) => {
     const myLocationPopup = new Popup().setHTML(
       "<h4>You are here</h4> <p>En algun lugar del mundo</p>"
     );
 
     new Marker({ color: "#61DAFB" })
-      .setLngLat(payload.getCenter())
+      .setLngLat(map.getCenter())
       .setPopup(myLocationPopup)
-      .addTo(payload);
+      .addTo(map);
 
     setMapa({
       ...mapa,
       isMapReady: true,
-      map: payload,
+      map: map,
     });
+  };
+
+  const getRouteBetweenPoints = async (
+    start: [number, number],
+    end: [number, number]
+  ) => {
+    const response = await directionsApi.get<DirectionsResponse>(
+      `/${start.join(",")};${end.join(",")}`
+    );
+
+    const { distance, duration, geometry } = response.data.routes[0];
+    let kms = distance / 1000;
+    kms = Math.floor(kms * 100) / 100;
+
+    const minutos = Math.floor(duration / 60);
+    console.log(kms, minutos);
   };
 
   function setMarkers(markers: Marker[]) {
@@ -82,6 +104,7 @@ function MapProvider({ children }: Props) {
       value={{
         ...mapa,
         setMapaD,
+        getRouteBetweenPoints,
       }}
     >
       {children}

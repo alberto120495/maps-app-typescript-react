@@ -4,18 +4,24 @@ import { useStateMapContext } from "../contexts/map/MapContext";
 import { Feature } from "../interfaces/places";
 
 function SearchResults() {
-  const { places, isLoadingPlaces } = useContext(PlacesContext);
-  const { map } = useStateMapContext();
+  const { places, isLoadingPlaces, userLocation } = useContext(PlacesContext);
+  const { map, getRouteBetweenPoints } = useStateMapContext();
 
   const [activeId, setActiveId] = useState("");
 
   const onPlaceClick = (place: Feature) => {
-    const [lng, lat] = place.center;
     setActiveId(place.id);
+    const [lng, lat] = place.center;
     map?.flyTo({
       zoom: 14,
       center: [lng, lat],
     });
+  };
+
+  const getRoute = (place: Feature) => {
+    if (!userLocation) return;
+    const [lng, lat] = place.center;
+    getRouteBetweenPoints?.(userLocation, [lng, lat]);
   };
 
   if (isLoadingPlaces) {
@@ -50,6 +56,7 @@ function SearchResults() {
             {place.place_name}
           </p>
           <button
+            onClick={() => getRoute(place)}
             className={`btn btn-sm ${
               activeId === place.id
                 ? " btn-outline-light"
