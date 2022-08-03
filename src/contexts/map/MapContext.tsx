@@ -1,4 +1,4 @@
-import { Map, Marker, Popup } from "mapbox-gl";
+import { Map, Marker, Popup, LngLatBounds, AnySourceData } from "mapbox-gl";
 import { createContext, useContext, useEffect, useState } from "react";
 import { directionsApi } from "../../apis";
 import { DirectionsResponse } from "../../interfaces/direactions";
@@ -85,11 +85,65 @@ function MapProvider({ children }: Props) {
     );
 
     const { distance, duration, geometry } = response.data.routes[0];
+
+    const { coordinates: coords } = geometry;
+
     let kms = distance / 1000;
     kms = Math.floor(kms * 100) / 100;
 
     const minutos = Math.floor(duration / 60);
     console.log(kms, minutos);
+
+    const bounds = new LngLatBounds(start, start);
+
+    for (const coord of coords) {
+      const newCoord: [number, number] = [coord[0], coord[1]];
+      bounds.extend(newCoord);
+    }
+
+    mapa.map?.fitBounds(bounds, {
+      padding: 200,
+    });
+
+    //Polyline
+    const sourceData: AnySourceData = {
+      type: "geojson",
+      data: {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            properties: {},
+            geometry: {
+              type: "LineString",
+              coordinates: coords,
+            },
+          },
+        ],
+      },
+    };
+
+    if (mapa.map?.getLayer("RouteString")) {
+      mapa.map?.removeLayer("RouteString");
+      mapa.map?.removeSource("RouteString");
+    }
+
+    mapa.map?.addSource("RouteString", sourceData);
+    
+
+    mapa.map?.addLayer({
+      id: "RouteString",
+      type: "line",
+      source: "RouteString",
+      layout: {
+        "line-cap": "round",
+        "line-join": "round",
+      },
+      paint: {
+        "line-color": "white",
+        "line-width": 3,
+      },
+    });
   };
 
   function setMarkers(markers: Marker[]) {
