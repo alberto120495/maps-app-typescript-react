@@ -1,4 +1,6 @@
-import { Map, Marker, Popup, LngLatBounds, AnySourceData } from "mapbox-gl";
+/* eslint import/no-webpack-loader-syntax:off */
+//@ts-ignore
+import { Map, Marker, Popup, LngLatBounds, AnySourceData } from "!mapbox-gl";
 import { createContext, useContext, useEffect, useState } from "react";
 import { directionsApi } from "../../apis";
 import { DirectionsResponse } from "../../interfaces/direactions";
@@ -129,7 +131,6 @@ function MapProvider({ children }: Props) {
     }
 
     mapa.map?.addSource("RouteString", sourceData);
-    
 
     mapa.map?.addLayer({
       id: "RouteString",
